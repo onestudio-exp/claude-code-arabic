@@ -76,6 +76,23 @@ read -r -d '' CSS_BLOCK <<'EOF' || true
   text-align:start !important;
   unicode-bidi:plaintext !important;
 }
+[class*="questionsContainer_" i],
+[class*="questionBlock_" i],
+[class*="questionItem_" i],
+[class*="questionHeader_" i],
+[class*="questionText_" i],
+[class*="optionsContainer_" i],
+[class*="option_" i],
+[class*="optionContent_" i],
+[class*="optionLabel_" i],
+[class*="optionDescription_" i],
+[class*="answerText_" i],
+[class*="scopeOption_" i],
+[class*="scopeOptionLabel_" i],
+[class*="scopeOptionDescription_" i]{
+  direction:rtl !important;
+  text-align:start !important;
+}
 /* ===== /CC-AR-RTL ===== */
 EOF
 
