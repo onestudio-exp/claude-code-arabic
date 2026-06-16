@@ -126,29 +126,31 @@ foreach ($root in $extRoots) {
                 Write-Host "ALREADY PATCHED (webview js): $($d.Name)" -ForegroundColor Cyan
             }
 
-            # Inject a floating RTL/LTR toggle button. The gated CSS below only
-            # applies when this button has set data-cc-dir="rtl" on <html>.
+            # Inject an RTL/LTR toggle button into the input footer (before the
+            # "Edit automatically" control). A light 1s interval keeps it in place
+            # across React re-renders (no heavy MutationObserver). The gated CSS
+            # below only applies when this button sets data-cc-dir="rtl" on <html>.
             $jsText = [System.IO.File]::ReadAllText($jsWv, $utf8NoBom)
             if ($jsText -notmatch 'cc-ar-toggle') {
                 if (-not (Test-Path "$jsWv.bak-arabic")) { Copy-Item $jsWv "$jsWv.bak-arabic" }
                 $btn = @'
 ;(function(){try{
-var K="cc-ar-dir",H=document.documentElement;
+var K="cc-ar-dir",H=document.documentElement,SEL='[class*="inputFooter_"]',AR=String.fromCharCode(8646);
 var get=function(){try{return localStorage.getItem(K)}catch(e){return null}};
-var set=function(v){try{localStorage.setItem(K,v)}catch(e){}};
+var save=function(v){try{localStorage.setItem(K,v)}catch(e){}};
 var cur=function(){return H.getAttribute("data-cc-dir")==="ltr"?"ltr":"rtl"};
-var s=get();H.setAttribute("data-cc-dir",s==="ltr"?"ltr":"rtl");
-var mk=function(){
- if(!document.body){return setTimeout(mk,300)}
- if(document.getElementById("cc-ar-toggle"))return;
- var b=document.createElement("button");b.id="cc-ar-toggle";b.type="button";
- b.style.cssText="position:fixed;bottom:10px;left:10px;z-index:2147483647;font:11px/1.3 system-ui,sans-serif;padding:4px 9px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:var(--vscode-button-secondaryBackground,#3a3d41);color:var(--vscode-button-secondaryForeground,#fff);cursor:pointer;opacity:.55;direction:ltr";
- var AR=String.fromCharCode(8646);var rnd=function(){b.textContent=(cur()==="rtl"?"RTL ":"LTR ")+AR;b.title="Toggle Arabic RTL / LTR"};
- b.onmouseenter=function(){b.style.opacity="1"};b.onmouseleave=function(){b.style.opacity=".55"};
- b.onclick=function(){var n=cur()==="rtl"?"ltr":"rtl";H.setAttribute("data-cc-dir",n);set(n);rnd()};
- rnd();document.body.appendChild(b);
-};
-mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mk);
+H.setAttribute("data-cc-dir",get()==="ltr"?"ltr":"rtl");
+var paint=function(b){var on=cur()==="rtl";
+ b.style.cssText="all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:5px;margin:0 6px;padding:2px 9px;border-radius:6px;cursor:pointer;font:11px/1.6 system-ui,sans-serif;white-space:nowrap;user-select:none;direction:ltr;border:1px solid "+(on?"var(--vscode-focusBorder,#3794ff)":"rgba(127,127,127,.35)")+";background:"+(on?"var(--vscode-button-background,#0e639c)":"transparent")+";color:"+(on?"var(--vscode-button-foreground,#fff)":"var(--vscode-descriptionForeground,#9a9a9a)")+";opacity:"+(on?"1":".8")+";";
+ b.textContent=(on?"RTL ":"LTR ")+AR;b.title="Toggle Arabic RTL / LTR";};
+var make=function(){var b=document.createElement("button");b.id="cc-ar-toggle";b.type="button";
+ b.onclick=function(e){e.preventDefault();e.stopPropagation();var n=cur()==="rtl"?"ltr":"rtl";H.setAttribute("data-cc-dir",n);save(n);paint(b);};
+ paint(b);return b;};
+var ensure=function(){var foot=document.querySelector(SEL);if(!foot)return;
+ var b=document.getElementById("cc-ar-toggle");
+ if(!b||b.parentNode!==foot){if(!b)b=make();foot.insertBefore(b,foot.firstChild);}
+ paint(b);};
+setInterval(ensure,1000);ensure();
 }catch(e){}})();
 '@
                 [System.IO.File]::WriteAllText($jsWv, ($jsText + $btn), $utf8NoBom)
