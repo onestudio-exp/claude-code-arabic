@@ -20,7 +20,10 @@ out RTL**. This is a tiny, reversible patcher that fixes both on your local inst
 | 2 | `extension.js` | Add `arabic` → `ar` to the language name map |
 | 3 | `extension.js` | Add English tech terms to the dictation keyterm list (so English words are transcribed correctly mid-Arabic) |
 | 4 | `webview/index.js` | Set `dir="auto"` on rendered markdown |
-| 5 | `webview/index.css` | RTL for chat **prose, lists, tables**; code blocks stay LTR; tables aligned right |
+| 5 | `webview/index.js` | Inject a floating **RTL ⇆ LTR toggle button** |
+| 6 | `webview/index.css` | RTL for chat **prose, lists, tables**, and the question/permission widgets; code blocks stay LTR; tables aligned right |
+
+The RTL rules are **gated** behind a `data-cc-dir="rtl"` attribute that the toggle button sets, so you can switch Arabic display on/off live.
 
 All patches are **idempotent** (re-running skips already-patched builds) and each modified
 file gets a pristine `*.bak-arabic` backup beside it.
@@ -57,6 +60,17 @@ your editor **settings.json** (User or Workspace):
 ```
 
 This affects **dictation only** — it does not force Claude's text replies to Arabic.
+
+## Switching RTL on/off live
+
+After patching, a small **`RTL ⇆`** button appears at the bottom-left of the Claude
+panel. Click it to toggle Arabic RTL display on/off **instantly — no reload needed**:
+
+- **`RTL ⇆`** — Arabic mode on (messages, lists, tables render right-to-left).
+- **`LTR ⇆`** — back to the extension's default left-to-right.
+
+Your choice is remembered (saved in `localStorage`) and the default is RTL. The button is
+a tiny one-shot injection — it does not run any background observer.
 
 ## Run again after every update
 
@@ -117,7 +131,10 @@ MIT — see [LICENSE](LICENSE).
 2. يضيف `arabic` → `ar` لخريطة أسماء اللغات.
 3. يضيف مصطلحات إنجليزية تقنية لقائمة keyterms (لتُكتب الكلمات الإنجليزية صحيحة وأنت تتكلم عربي).
 4. يضبط `dir="auto"` على عناصر الماركداون (`webview/index.js`).
-5. يجعل النصوص والقوائم والجداول RTL، مع إبقاء الكود LTR ومحاذاة الجداول لليمين (`webview/index.css`).
+5. يحقن **زرًّا عائمًا للتبديل RTL ⇆ LTR** (`webview/index.js`).
+6. يجعل النصوص والقوائم والجداول وودجت الأسئلة RTL، مع إبقاء الكود LTR ومحاذاة الجداول لليمين (`webview/index.css`).
+
+قواعد RTL **مشروطة** بسمة `data-cc-dir="rtl"` التي يضبطها الزر، فيمكنك تشغيل/إطفاء العرض العربي حيًّا.
 
 كل الترقيعات **idempotent** (إعادة التشغيل آمنة)، ولكل ملف نسخة احتياطية `*.bak-arabic`.
 
@@ -133,6 +150,13 @@ MIT — see [LICENSE](LICENSE).
 "accessibility.voice.speechLanguage": "arabic"
 ```
 (يؤثّر على الإملاء فقط، ولا يُجبر ردود Claude على العربية.)
+
+### التبديل بين RTL و LTR حيًّا
+بعد الترقيع يظهر زر صغير **`RTL ⇆`** أسفل يسار لوحة Claude. اضغطه للتبديل **فورًا بلا إعادة تشغيل**:
+- **`RTL ⇆`** — الوضع العربي مفعّل (يمين لليسار).
+- **`LTR ⇆`** — العودة للوضع الافتراضي (يسار لليمين).
+
+يُحفظ اختيارك (في `localStorage`) والافتراضي RTL. الزر حقنٌ خفيف لمرة واحدة بلا أي مراقب خلفي.
 
 ### بعد كل تحديث
 التحديث يمسح الترقيع — أعد تشغيل السكربت فقط.
