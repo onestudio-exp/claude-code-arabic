@@ -38,62 +38,84 @@ done
 # CSS block appended to webview/index.css
 read -r -d '' CSS_BLOCK <<'EOF' || true
 
-/* ===== CC-AR-RTL : RTL for prose/lists/tables; code LTR (except untagged blocks); table right-aligned ===== */
-[class*="messagesContainer_" i] p,
-[class*="messagesContainer_" i] li,
-[class*="messagesContainer_" i] ul,
-[class*="messagesContainer_" i] ol,
-[class*="messagesContainer_" i] blockquote,
-[class*="messagesContainer_" i] h1,
-[class*="messagesContainer_" i] h2,
-[class*="messagesContainer_" i] h3,
-[class*="messagesContainer_" i] h4,
-[class*="messagesContainer_" i] h5,
-[class*="messagesContainer_" i] h6,
-[class*="messagesContainer_" i] table,
-[class*="messagesContainer_" i] thead,
-[class*="messagesContainer_" i] tbody,
-[class*="messagesContainer_" i] tr,
-[class*="messagesContainer_" i] th,
-[class*="messagesContainer_" i] td{
+/* ===== CC-AR-RTL : gated by [data-cc-dir="rtl"] on <html>; floating toggle injected in index.js ===== */
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] p,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] li,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] ul,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] ol,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] blockquote,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] h1,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] h2,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] h3,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] h4,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] h5,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] h6,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] table,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] thead,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] tbody,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] tr,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] th,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] td{
   direction:rtl !important;
   text-align:start !important;
 }
-[class*="messagesContainer_" i] table{
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] table{
   margin-left:auto !important;
   margin-right:0 !important;
 }
-[class*="messagesContainer_" i] pre,
-[class*="messagesContainer_" i] pre *,
-[class*="messagesContainer_" i] code{
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] pre,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] pre *,
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] code{
   direction:ltr !important;
   text-align:left !important;
   unicode-bidi:normal !important;
 }
-[class*="messagesContainer_" i] pre:has(> code:not([class*="language-"])),
-[class*="messagesContainer_" i] pre:has(> code:not([class*="language-"])) > code{
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] pre:has(> code:not([class*="language-"])),
+[data-cc-dir="rtl"] [class*="messagesContainer_" i] pre:has(> code:not([class*="language-"])) > code{
   direction:rtl !important;
   text-align:start !important;
   unicode-bidi:plaintext !important;
 }
-[class*="questionsContainer_" i],
-[class*="questionBlock_" i],
-[class*="questionItem_" i],
-[class*="questionHeader_" i],
-[class*="questionText_" i],
-[class*="optionsContainer_" i],
-[class*="option_" i],
-[class*="optionContent_" i],
-[class*="optionLabel_" i],
-[class*="optionDescription_" i],
-[class*="answerText_" i],
-[class*="scopeOption_" i],
-[class*="scopeOptionLabel_" i],
-[class*="scopeOptionDescription_" i]{
+[data-cc-dir="rtl"] [class*="questionsContainer_" i],
+[data-cc-dir="rtl"] [class*="questionBlock_" i],
+[data-cc-dir="rtl"] [class*="questionItem_" i],
+[data-cc-dir="rtl"] [class*="questionHeader_" i],
+[data-cc-dir="rtl"] [class*="questionText_" i],
+[data-cc-dir="rtl"] [class*="optionsContainer_" i],
+[data-cc-dir="rtl"] [class*="option_" i],
+[data-cc-dir="rtl"] [class*="optionContent_" i],
+[data-cc-dir="rtl"] [class*="optionLabel_" i],
+[data-cc-dir="rtl"] [class*="optionDescription_" i],
+[data-cc-dir="rtl"] [class*="answerText_" i],
+[data-cc-dir="rtl"] [class*="scopeOption_" i],
+[data-cc-dir="rtl"] [class*="scopeOptionLabel_" i],
+[data-cc-dir="rtl"] [class*="scopeOptionDescription_" i]{
   direction:rtl !important;
   text-align:start !important;
 }
 /* ===== /CC-AR-RTL ===== */
+EOF
+
+# Floating RTL/LTR toggle button appended to webview/index.js
+read -r -d '' BTN_BLOCK <<'EOF' || true
+;(function(){try{
+var K="cc-ar-dir",H=document.documentElement;
+var get=function(){try{return localStorage.getItem(K)}catch(e){return null}};
+var set=function(v){try{localStorage.setItem(K,v)}catch(e){}};
+var cur=function(){return H.getAttribute("data-cc-dir")==="ltr"?"ltr":"rtl"};
+var s=get();H.setAttribute("data-cc-dir",s==="ltr"?"ltr":"rtl");
+var mk=function(){
+ if(!document.body){return setTimeout(mk,300)}
+ if(document.getElementById("cc-ar-toggle"))return;
+ var b=document.createElement("button");b.id="cc-ar-toggle";b.type="button";
+ b.style.cssText="position:fixed;bottom:10px;left:10px;z-index:2147483647;font:11px/1.3 system-ui,sans-serif;padding:4px 9px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:var(--vscode-button-secondaryBackground,#3a3d41);color:var(--vscode-button-secondaryForeground,#fff);cursor:pointer;opacity:.55;direction:ltr";
+ var rnd=function(){b.textContent=cur()==="rtl"?"RTL ⇆":"LTR ⇆";b.title="Toggle Arabic RTL / LTR"};
+ b.onmouseenter=function(){b.style.opacity="1"};b.onmouseleave=function(){b.style.opacity=".55"};
+ b.onclick=function(){var n=cur()==="rtl"?"ltr":"rtl";H.setAttribute("data-cc-dir",n);set(n);rnd()};
+ rnd();document.body.appendChild(b);
+};
+mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mk);
+}catch(e){}})();
 EOF
 
 patched_any=0
@@ -135,6 +157,14 @@ for root in "${ROOTS[@]}"; do
         echo "PATCHED (webview js): $(basename "$d")"; patched_any=1
       else
         echo "ALREADY PATCHED (webview js): $(basename "$d")"
+      fi
+      # Floating RTL/LTR toggle button (the gated CSS only applies when it sets data-cc-dir="rtl")
+      if ! grep -qF 'cc-ar-toggle' "$jswv"; then
+        [ -f "$jswv.bak-arabic" ] || cp "$jswv" "$jswv.bak-arabic"
+        printf '%s\n' "$BTN_BLOCK" >> "$jswv"
+        echo "PATCHED (toggle button): $(basename "$d")"; patched_any=1
+      else
+        echo "ALREADY PATCHED (toggle button): $(basename "$d")"
       fi
     fi
 
