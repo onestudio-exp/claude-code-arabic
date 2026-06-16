@@ -143,7 +143,7 @@ var mk=function(){
  if(document.getElementById("cc-ar-toggle"))return;
  var b=document.createElement("button");b.id="cc-ar-toggle";b.type="button";
  b.style.cssText="position:fixed;bottom:10px;left:10px;z-index:2147483647;font:11px/1.3 system-ui,sans-serif;padding:4px 9px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:var(--vscode-button-secondaryBackground,#3a3d41);color:var(--vscode-button-secondaryForeground,#fff);cursor:pointer;opacity:.55;direction:ltr";
- var rnd=function(){b.textContent=cur()==="rtl"?"RTL ⇆":"LTR ⇆";b.title="Toggle Arabic RTL / LTR"};
+ var AR=String.fromCharCode(8646);var rnd=function(){b.textContent=(cur()==="rtl"?"RTL ":"LTR ")+AR;b.title="Toggle Arabic RTL / LTR"};
  b.onmouseenter=function(){b.style.opacity="1"};b.onmouseleave=function(){b.style.opacity=".55"};
  b.onclick=function(){var n=cur()==="rtl"?"ltr":"rtl";H.setAttribute("data-cc-dir",n);set(n);rnd()};
  rnd();document.body.appendChild(b);
