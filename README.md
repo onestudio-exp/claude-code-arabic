@@ -4,9 +4,10 @@ Enable **Arabic voice dictation** and **right-to-left (RTL) Arabic rendering** i
 [Claude Code](https://claude.com/product/claude-code) IDE extension — for **Windsurf,
 VS Code, and Cursor**.
 
-The extension ships great Arabic-capable speech-to-text (Deepgram Nova-3) and a capable
-chat renderer, but **Arabic is not exposed for dictation** and **chat output is not laid
-out RTL**. This is a tiny, reversible patcher that fixes both on your local install.
+Claude Code can already transcribe Arabic speech (via Deepgram Nova-3) and render rich
+chat — it just doesn't let you **pick Arabic for dictation**, and it shows Arabic replies
+**left-to-right**. This is a small, reversible patch that turns both on, and adds a
+one-click **RTL ⇄ LTR toggle** right inside the chat box.
 
 > العربية في الأسفل ⬇️ — [اقفز للشرح العربي](#بالعربية)
 
@@ -63,14 +64,15 @@ This affects **dictation only** — it does not force Claude's text replies to A
 
 ## Switching RTL on/off live
 
-After patching, a small **`RTL ⇆`** button appears at the bottom-left of the Claude
-panel. Click it to toggle Arabic RTL display on/off **instantly — no reload needed**:
+After patching, a small **`RTL ⇆`** button appears **inside the chat box**, just before
+the "Edit automatically" control. Click it to toggle Arabic RTL display on/off
+**instantly — no reload needed**:
 
-- **`RTL ⇆`** — Arabic mode on (messages, lists, tables render right-to-left).
-- **`LTR ⇆`** — back to the extension's default left-to-right.
+- **`RTL ⇆`** (lit) — Arabic mode on (messages, lists, tables render right-to-left).
+- **`LTR ⇆`** (dim) — back to the extension's default left-to-right.
 
 Your choice is remembered (saved in `localStorage`) and the default is RTL. The button is
-a tiny one-shot injection — it does not run any background observer.
+kept in place by a light 1-second check — it does not run any heavy background observer.
 
 ## Run again after every update
 
@@ -123,15 +125,16 @@ MIT — see [LICENSE](LICENSE).
 أداة صغيرة وقابلة للتراجع تُفعّل **الإملاء الصوتي العربي** و**عرض النصوص العربية من اليمين
 لليسار (RTL)** في إضافة **Claude Code** داخل **Windsurf / VS Code / Cursor**.
 
-الإضافة تدعم تحويل الكلام العربي إلى نص (عبر Deepgram Nova-3) لكنها **لا تُتيح العربية
-للإملاء**، كما أن **مخرجات المحادثة لا تُعرض RTL**. هذا السكربت يصلح الأمرين على نسختك المحلية.
+يستطيع Claude Code أصلًا تحويل الكلام العربي إلى نص (عبر Deepgram Nova-3) وعرض محادثة غنيّة،
+لكنه **لا يتيح اختيار العربية للإملاء**، ويعرض الردود العربية **من اليسار لليمين**. هذا السكربت
+يفعّل الأمرين، ويضيف **زر تبديل RTL ⇄ LTR بنقرة واحدة داخل صندوق المحادثة**.
 
 ### ماذا يفعل؟
 1. يضيف `ar` لقائمة لغات الإملاء (`extension.js`).
 2. يضيف `arabic` → `ar` لخريطة أسماء اللغات.
 3. يضيف مصطلحات إنجليزية تقنية لقائمة keyterms (لتُكتب الكلمات الإنجليزية صحيحة وأنت تتكلم عربي).
 4. يضبط `dir="auto"` على عناصر الماركداون (`webview/index.js`).
-5. يحقن **زرًّا عائمًا للتبديل RTL ⇆ LTR** (`webview/index.js`).
+5. يحقن **زر تبديل RTL ⇆ LTR داخل صندوق المحادثة** (`webview/index.js`).
 6. يجعل النصوص والقوائم والجداول وودجت الأسئلة RTL، مع إبقاء الكود LTR ومحاذاة الجداول لليمين (`webview/index.css`).
 
 قواعد RTL **مشروطة** بسمة `data-cc-dir="rtl"` التي يضبطها الزر، فيمكنك تشغيل/إطفاء العرض العربي حيًّا.
@@ -152,11 +155,12 @@ MIT — see [LICENSE](LICENSE).
 (يؤثّر على الإملاء فقط، ولا يُجبر ردود Claude على العربية.)
 
 ### التبديل بين RTL و LTR حيًّا
-بعد الترقيع يظهر زر صغير **`RTL ⇆`** أسفل يسار لوحة Claude. اضغطه للتبديل **فورًا بلا إعادة تشغيل**:
-- **`RTL ⇆`** — الوضع العربي مفعّل (يمين لليسار).
-- **`LTR ⇆`** — العودة للوضع الافتراضي (يسار لليمين).
+بعد الترقيع يظهر زر صغير **`RTL ⇆`** **داخل صندوق المحادثة**، قبل زر "Edit automatically" مباشرة.
+اضغطه للتبديل **فورًا بلا إعادة تشغيل**:
+- **`RTL ⇆`** (مضيء) — الوضع العربي مفعّل (يمين لليسار).
+- **`LTR ⇆`** (باهت) — العودة للوضع الافتراضي (يسار لليمين).
 
-يُحفظ اختيارك (في `localStorage`) والافتراضي RTL. الزر حقنٌ خفيف لمرة واحدة بلا أي مراقب خلفي.
+يُحفظ اختيارك (في `localStorage`) والافتراضي RTL. يبقى الزر في مكانه عبر فحص خفيف كل ثانية، بلا أي مراقب ثقيل.
 
 ### بعد كل تحديث
 التحديث يمسح الترقيع — أعد تشغيل السكربت فقط.
